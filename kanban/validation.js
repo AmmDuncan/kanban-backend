@@ -2,6 +2,9 @@ import Joi from "joi";
 
 export const createBoardSchema = Joi.object({
   name: Joi.string().required(),
+  columns: Joi.array().items({
+    name: Joi.string().required(),
+  }),
 });
 
 export const editBoardSchema = Joi.object({

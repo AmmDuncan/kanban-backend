@@ -10,23 +10,28 @@ export async function getBoards(payload) {
 export async function getSingleBoard(payload) {
   const { id, user } = payload;
   const board = await BoardModel.findById(id);
-  console.log(board);
   if (!board) throw new NotFoundError("Board not found");
   if (board && board.user.toString() !== user.id)
     throw new NotAllowedError("Permission Denied");
-  return board.toObject();
+
+  const columns = await ColumnModel.find({ board: board._id });
+  return { ...board.toObject(), columns };
 }
 
 export async function createBoard(payload) {
-  const { name, user } = payload;
+  const { name, user, columns } = payload;
   const board = await BoardModel.create({ name, user: user.id });
-  return board.toObject();
+  if (columns)
+    await ColumnModel.create(
+      columns.map(({ name }) => ({ name, board: board._id, user: user.id }))
+    );
+  return await getSingleBoard({ id: board._id, user });
 }
 
 export async function editBoard(payload) {
   const { id, ...rest } = payload;
-  const column = await BoardModel.findByIdAndUpdate(id, rest, { new: true });
-  return column.toObject();
+  const board = await BoardModel.findByIdAndUpdate(id, rest, { new: true });
+  return await getSingleBoard({ id: board._id, user });
 }
 
 export async function deleteBoard(payload) {
