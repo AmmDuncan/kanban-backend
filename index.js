@@ -1,7 +1,7 @@
 import http from "http";
 import mongoose from "mongoose";
 
-import { app } from "./app";
+import {app} from "./app";
 
 import config from "./helpers/config";
 
@@ -11,10 +11,9 @@ mongoose
   .connect(config.mongoDbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
-  .then(() => {
+  }, () => {
     console.log("Connected to db");
-  });
+  })
 
 const port = config.PORT || 8080;
 server.listen(port, () => {

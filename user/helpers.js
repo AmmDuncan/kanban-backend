@@ -40,6 +40,7 @@ export function handleDuplicateError(err, res) {
   const errorParams = Object.entries(err.keyValue)[0];
   const modelName = err.message.split(".")[1].split(" ")[0];
   return res.status(400).send({
+    status: "error",
     message: `${modelName.slice(0, modelName.length - 1)} with ${
       errorParams[0]
     } "${errorParams[1]}" already exists`,
