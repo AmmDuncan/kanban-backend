@@ -18,16 +18,16 @@ export async function authenticate(req, res, next) {
   if (!authHeader) authHeader = req.headers["Authorization"];
   authHeader = authHeader || "";
   const token = extractToken(authHeader);
-  if (!token) next(new AuthenticationError("Expected token"));
+  if (!token) return next(new AuthenticationError("Expected token"));
 
   try {
     const verified = jwt.verify(token, config.JWT_SECRET_KEY);
-    const now = getCurrentTimeInSeconds();
-    if (now > verified.exp) next(new AuthenticationError("Token expired"));
     req.user = verified;
-    next();
+    return next();
   } catch (err) {
     if (err.name === "JsonWebTokenError")
-      next(new AuthenticationError("Invalid token"));
+      return next(new AuthenticationError("Invalid token"));
+    else if (err.name === "TokenExpiredError")
+      return next(new AuthenticationError("Token expired"));
   }
 }
