@@ -15,7 +15,8 @@ export async function getSingleBoard(payload) {
     throw new NotAllowedError("Permission Denied");
 
   const columns = await ColumnModel.find({ board: board._id });
-  return { ...board.toObject(), columns };
+  const tasks = await TaskModel.find({ board: board._id });
+  return { ...board.toObject(), columns, tasks };
 }
 
 export async function createBoard(payload) {
